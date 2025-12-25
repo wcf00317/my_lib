@@ -1,0 +1,177 @@
+🚀 Start Eval | Output=(128,256)
+Metrics: Seg mIoU (↑) | Seg Pix Acc (↑) | Depth Abs Err (↓) | Depth Rel Err (↓)
+
+========== cityscapes_EW_HPS ==========
+   -> Detected Weighting: EW
+
+[Corruption: contrast]
+  Level 1: mIoU=0.6693 | PixAcc=0.9070 | AbsErr=0.0139 | RelErr=46.0426
+  Level 2: mIoU=0.6471 | PixAcc=0.8976 | AbsErr=0.0151 | RelErr=49.7503
+  Level 3: mIoU=0.5987 | PixAcc=0.8761 | AbsErr=0.0185 | RelErr=59.7736
+  Level 4: mIoU=0.4620 | PixAcc=0.8042 | AbsErr=0.0320 | RelErr=91.2786
+  Level 5: mIoU=0.2731 | PixAcc=0.6918 | AbsErr=0.0540 | RelErr=124.2873
+  >> Avg: mIoU=0.5300 | PixAcc=0.8354 | AbsErr=0.0267 | RelErr=74.2265
+
+[Corruption: defocus_blur]
+  Level 1: mIoU=0.6954 | PixAcc=0.9191 | AbsErr=0.0128 | RelErr=44.1650
+  Level 2: mIoU=0.6943 | PixAcc=0.9188 | AbsErr=0.0128 | RelErr=44.2108
+  Level 3: mIoU=0.6903 | PixAcc=0.9174 | AbsErr=0.0131 | RelErr=44.3883
+  Level 4: mIoU=0.6834 | PixAcc=0.9147 | AbsErr=0.0135 | RelErr=44.6107
+  Level 5: mIoU=0.6747 | PixAcc=0.9110 | AbsErr=0.0141 | RelErr=45.0370
+  >> Avg: mIoU=0.6876 | PixAcc=0.9162 | AbsErr=0.0133 | RelErr=44.4824
+
+[Corruption: fog]
+  Level 1: mIoU=0.5572 | PixAcc=0.8254 | AbsErr=0.0216 | RelErr=49.6829
+  Level 2: mIoU=0.5097 | PixAcc=0.7954 | AbsErr=0.0262 | RelErr=55.1078
+  Level 3: mIoU=0.4516 | PixAcc=0.7605 | AbsErr=0.0361 | RelErr=65.3191
+  Level 4: mIoU=0.4291 | PixAcc=0.7454 | AbsErr=0.0449 | RelErr=69.2703
+  Level 5: mIoU=0.3360 | PixAcc=0.6631 | AbsErr=0.0705 | RelErr=92.9730
+  >> Avg: mIoU=0.4567 | PixAcc=0.7580 | AbsErr=0.0399 | RelErr=66.4706
+
+[Corruption: gaussian_noise]
+  Level 1: mIoU=0.6910 | PixAcc=0.9168 | AbsErr=0.0130 | RelErr=45.8190
+  Level 2: mIoU=0.6847 | PixAcc=0.9131 | AbsErr=0.0135 | RelErr=47.1586
+  Level 3: mIoU=0.6710 | PixAcc=0.9058 | AbsErr=0.0146 | RelErr=49.1349
+  Level 4: mIoU=0.6451 | PixAcc=0.8921 | AbsErr=0.0166 | RelErr=51.3895
+  Level 5: mIoU=0.5984 | PixAcc=0.8662 | AbsErr=0.0203 | RelErr=55.6212
+  >> Avg: mIoU=0.6580 | PixAcc=0.8988 | AbsErr=0.0156 | RelErr=49.8246
+
+========== cityscapes_EW_MTAN ==========
+   -> Detected Weighting: EW
+
+[Corruption: contrast]
+  Level 1: mIoU=0.6723 | PixAcc=0.9070 | AbsErr=0.0138 | RelErr=46.2215
+  Level 2: mIoU=0.6514 | PixAcc=0.8979 | AbsErr=0.0148 | RelErr=48.7896
+  Level 3: mIoU=0.6066 | PixAcc=0.8782 | AbsErr=0.0174 | RelErr=55.5458
+  Level 4: mIoU=0.4703 | PixAcc=0.8079 | AbsErr=0.0280 | RelErr=76.7913
+  Level 5: mIoU=0.2877 | PixAcc=0.6775 | AbsErr=0.0470 | RelErr=102.7175
+  >> Avg: mIoU=0.5377 | PixAcc=0.8337 | AbsErr=0.0242 | RelErr=66.0131
+
+[Corruption: defocus_blur]
+  Level 1: mIoU=0.7014 | PixAcc=0.9204 | AbsErr=0.0126 | RelErr=45.8260
+  Level 2: mIoU=0.7003 | PixAcc=0.9200 | AbsErr=0.0127 | RelErr=46.0160
+  Level 3: mIoU=0.6954 | PixAcc=0.9181 | AbsErr=0.0130 | RelErr=46.5335
+  Level 4: mIoU=0.6872 | PixAcc=0.9150 | AbsErr=0.0135 | RelErr=47.2382
+  Level 5: mIoU=0.6775 | PixAcc=0.9109 | AbsErr=0.0142 | RelErr=48.2322
+  >> Avg: mIoU=0.6924 | PixAcc=0.9169 | AbsErr=0.0132 | RelErr=46.7692
+
+[Corruption: fog]
+  Level 1: mIoU=0.5704 | PixAcc=0.8378 | AbsErr=0.0192 | RelErr=46.3538
+  Level 2: mIoU=0.5188 | PixAcc=0.8075 | AbsErr=0.0221 | RelErr=50.3764
+  Level 3: mIoU=0.4504 | PixAcc=0.7681 | AbsErr=0.0301 | RelErr=60.1024
+  Level 4: mIoU=0.4226 | PixAcc=0.7487 | AbsErr=0.0397 | RelErr=68.3136
+  Level 5: mIoU=0.3246 | PixAcc=0.6746 | AbsErr=0.0653 | RelErr=102.4773
+  >> Avg: mIoU=0.4574 | PixAcc=0.7673 | AbsErr=0.0353 | RelErr=65.5247
+
+[Corruption: gaussian_noise]
+  Level 1: mIoU=0.6974 | PixAcc=0.9185 | AbsErr=0.0128 | RelErr=46.6317
+  Level 2: mIoU=0.6907 | PixAcc=0.9148 | AbsErr=0.0132 | RelErr=47.0750
+  Level 3: mIoU=0.6779 | PixAcc=0.9076 | AbsErr=0.0139 | RelErr=47.5902
+  Level 4: mIoU=0.6559 | PixAcc=0.8951 | AbsErr=0.0153 | RelErr=48.1943
+  Level 5: mIoU=0.6150 | PixAcc=0.8723 | AbsErr=0.0178 | RelErr=50.0034
+  >> Avg: mIoU=0.6674 | PixAcc=0.9017 | AbsErr=0.0146 | RelErr=47.8989
+
+========== cityscapes_GradNorm_HPS ==========
+   -> Detected Weighting: GradNorm
+
+[Corruption: contrast]
+  Level 1: mIoU=0.6746 | PixAcc=0.9084 | AbsErr=0.0135 | RelErr=47.4433
+  Level 2: mIoU=0.6541 | PixAcc=0.8999 | AbsErr=0.0145 | RelErr=51.6902
+  Level 3: mIoU=0.6092 | PixAcc=0.8806 | AbsErr=0.0171 | RelErr=61.0735
+  Level 4: mIoU=0.4769 | PixAcc=0.8127 | AbsErr=0.0271 | RelErr=84.0587
+  Level 5: mIoU=0.2674 | PixAcc=0.6637 | AbsErr=0.0477 | RelErr=109.7442
+  >> Avg: mIoU=0.5364 | PixAcc=0.8331 | AbsErr=0.0240 | RelErr=70.8020
+
+[Corruption: defocus_blur]
+  Level 1: mIoU=0.7010 | PixAcc=0.9197 | AbsErr=0.0125 | RelErr=44.7933
+  Level 2: mIoU=0.7003 | PixAcc=0.9195 | AbsErr=0.0125 | RelErr=44.9356
+  Level 3: mIoU=0.6962 | PixAcc=0.9180 | AbsErr=0.0127 | RelErr=45.2982
+  Level 4: mIoU=0.6894 | PixAcc=0.9153 | AbsErr=0.0131 | RelErr=45.7498
+  Level 5: mIoU=0.6801 | PixAcc=0.9116 | AbsErr=0.0137 | RelErr=46.4817
+  >> Avg: mIoU=0.6934 | PixAcc=0.9168 | AbsErr=0.0129 | RelErr=45.4517
+
+[Corruption: fog]
+  Level 1: mIoU=0.5768 | PixAcc=0.8401 | AbsErr=0.0186 | RelErr=53.6948
+  Level 2: mIoU=0.5320 | PixAcc=0.8125 | AbsErr=0.0217 | RelErr=59.9418
+  Level 3: mIoU=0.4703 | PixAcc=0.7744 | AbsErr=0.0286 | RelErr=69.4863
+  Level 4: mIoU=0.4398 | PixAcc=0.7504 | AbsErr=0.0370 | RelErr=73.0478
+  Level 5: mIoU=0.3290 | PixAcc=0.6376 | AbsErr=0.0611 | RelErr=92.7214
+  >> Avg: mIoU=0.4696 | PixAcc=0.7630 | AbsErr=0.0334 | RelErr=69.7784
+
+[Corruption: gaussian_noise]
+  Level 1: mIoU=0.6961 | PixAcc=0.9171 | AbsErr=0.0127 | RelErr=45.5009
+  Level 2: mIoU=0.6898 | PixAcc=0.9131 | AbsErr=0.0130 | RelErr=46.4764
+  Level 3: mIoU=0.6763 | PixAcc=0.9051 | AbsErr=0.0138 | RelErr=48.4345
+  Level 4: mIoU=0.6471 | PixAcc=0.8887 | AbsErr=0.0155 | RelErr=51.6676
+  Level 5: mIoU=0.5944 | PixAcc=0.8567 | AbsErr=0.0190 | RelErr=58.4611
+  >> Avg: mIoU=0.6607 | PixAcc=0.8961 | AbsErr=0.0148 | RelErr=50.1081
+
+========== cityscapes_PCGrad_HPS ==========
+   -> Detected Weighting: PCGrad
+
+[Corruption: contrast]
+  Level 1: mIoU=0.6703 | PixAcc=0.9059 | AbsErr=0.0139 | RelErr=46.9472
+  Level 2: mIoU=0.6508 | PixAcc=0.8972 | AbsErr=0.0151 | RelErr=50.9733
+  Level 3: mIoU=0.6062 | PixAcc=0.8762 | AbsErr=0.0188 | RelErr=61.1183
+  Level 4: mIoU=0.4558 | PixAcc=0.7957 | AbsErr=0.0340 | RelErr=92.3678
+  Level 5: mIoU=0.2578 | PixAcc=0.6682 | AbsErr=0.0586 | RelErr=125.7629
+  >> Avg: mIoU=0.5282 | PixAcc=0.8286 | AbsErr=0.0281 | RelErr=75.4339
+
+[Corruption: defocus_blur]
+  Level 1: mIoU=0.6977 | PixAcc=0.9183 | AbsErr=0.0128 | RelErr=44.6378
+  Level 2: mIoU=0.6970 | PixAcc=0.9181 | AbsErr=0.0129 | RelErr=44.7648
+  Level 3: mIoU=0.6933 | PixAcc=0.9169 | AbsErr=0.0131 | RelErr=45.1567
+  Level 4: mIoU=0.6865 | PixAcc=0.9147 | AbsErr=0.0135 | RelErr=45.7318
+  Level 5: mIoU=0.6769 | PixAcc=0.9113 | AbsErr=0.0141 | RelErr=46.6997
+  >> Avg: mIoU=0.6903 | PixAcc=0.9159 | AbsErr=0.0133 | RelErr=45.3982
+
+[Corruption: fog]
+  Level 1: mIoU=0.5709 | PixAcc=0.8371 | AbsErr=0.0200 | RelErr=50.0507
+  Level 2: mIoU=0.5187 | PixAcc=0.8051 | AbsErr=0.0237 | RelErr=55.2452
+  Level 3: mIoU=0.4566 | PixAcc=0.7678 | AbsErr=0.0320 | RelErr=64.4092
+  Level 4: mIoU=0.4348 | PixAcc=0.7552 | AbsErr=0.0399 | RelErr=69.2698
+  Level 5: mIoU=0.3525 | PixAcc=0.6952 | AbsErr=0.0634 | RelErr=90.9699
+  >> Avg: mIoU=0.4667 | PixAcc=0.7721 | AbsErr=0.0358 | RelErr=65.9890
+
+[Corruption: gaussian_noise]
+  Level 1: mIoU=0.6924 | PixAcc=0.9152 | AbsErr=0.0130 | RelErr=45.8866
+  Level 2: mIoU=0.6843 | PixAcc=0.9101 | AbsErr=0.0133 | RelErr=46.8243
+  Level 3: mIoU=0.6695 | PixAcc=0.9007 | AbsErr=0.0141 | RelErr=48.4320
+  Level 4: mIoU=0.6415 | PixAcc=0.8836 | AbsErr=0.0157 | RelErr=51.3093
+  Level 5: mIoU=0.5888 | PixAcc=0.8476 | AbsErr=0.0191 | RelErr=57.5052
+  >> Avg: mIoU=0.6553 | PixAcc=0.8915 | AbsErr=0.0150 | RelErr=49.9915
+
+========== cityscapes_STCH_HPS ==========
+   -> Detected Weighting: EW
+
+[Corruption: contrast]
+  Level 1: mIoU=0.6668 | PixAcc=0.9047 | AbsErr=0.0129 | RelErr=44.8139
+  Level 2: mIoU=0.6488 | PixAcc=0.8961 | AbsErr=0.0135 | RelErr=47.4598
+  Level 3: mIoU=0.6081 | PixAcc=0.8762 | AbsErr=0.0154 | RelErr=54.0437
+  Level 4: mIoU=0.4797 | PixAcc=0.8110 | AbsErr=0.0243 | RelErr=74.7472
+  Level 5: mIoU=0.2954 | PixAcc=0.6980 | AbsErr=0.0459 | RelErr=108.7566
+  >> Avg: mIoU=0.5398 | PixAcc=0.8372 | AbsErr=0.0224 | RelErr=65.9642
+
+[Corruption: defocus_blur]
+  Level 1: mIoU=0.6947 | PixAcc=0.9178 | AbsErr=0.0123 | RelErr=42.9624
+  Level 2: mIoU=0.6939 | PixAcc=0.9175 | AbsErr=0.0123 | RelErr=43.0408
+  Level 3: mIoU=0.6903 | PixAcc=0.9162 | AbsErr=0.0123 | RelErr=43.2971
+  Level 4: mIoU=0.6840 | PixAcc=0.9137 | AbsErr=0.0125 | RelErr=43.6264
+  Level 5: mIoU=0.6758 | PixAcc=0.9103 | AbsErr=0.0128 | RelErr=44.1435
+  >> Avg: mIoU=0.6877 | PixAcc=0.9151 | AbsErr=0.0124 | RelErr=43.4140
+
+[Corruption: fog]
+  Level 1: mIoU=0.5713 | PixAcc=0.8401 | AbsErr=0.0169 | RelErr=49.4614
+  Level 2: mIoU=0.5235 | PixAcc=0.8111 | AbsErr=0.0194 | RelErr=53.9730
+  Level 3: mIoU=0.4501 | PixAcc=0.7693 | AbsErr=0.0256 | RelErr=63.1480
+  Level 4: mIoU=0.4170 | PixAcc=0.7439 | AbsErr=0.0307 | RelErr=66.4116
+  Level 5: mIoU=0.3163 | PixAcc=0.6628 | AbsErr=0.0475 | RelErr=85.0624
+  >> Avg: mIoU=0.4556 | PixAcc=0.7654 | AbsErr=0.0280 | RelErr=63.6113
+
+[Corruption: gaussian_noise]
+  Level 1: mIoU=0.6900 | PixAcc=0.9155 | AbsErr=0.0125 | RelErr=43.3988
+  Level 2: mIoU=0.6834 | PixAcc=0.9116 | AbsErr=0.0127 | RelErr=43.9047
+  Level 3: mIoU=0.6696 | PixAcc=0.9038 | AbsErr=0.0132 | RelErr=44.5972
+  Level 4: mIoU=0.6449 | PixAcc=0.8896 | AbsErr=0.0142 | RelErr=45.6789
+  Level 5: mIoU=0.6020 | PixAcc=0.8648 | AbsErr=0.0164 | RelErr=48.8011
+  >> Avg: mIoU=0.6580 | PixAcc=0.8971 | AbsErr=0.0138 | RelErr=45.2761
