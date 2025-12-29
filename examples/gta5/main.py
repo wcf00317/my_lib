@@ -16,7 +16,6 @@ from LibMTL.config import LibMTL_args, prepare_args
 from LibMTL.trainer import Trainer
 from LibMTL.utils import set_random_seed
 from LibMTL.model import resnet_dilated
-# 必须导入 AbsLoss，否则自定义 Loss 无法被 meter 记录
 from LibMTL.loss import AbsLoss
 
 # Metric 基类防报错
@@ -26,7 +25,7 @@ except ImportError:
     class AbsMetric(object): pass
 
 # ============================================================================
-# 0. ASPP Decoder Definitions (LibMTL Standard)
+# 0. ASPP Decoder Definitions (保持不变)
 # ============================================================================
 class ASPPConv(nn.Sequential):
     def __init__(self, in_channels, out_channels, dilation):
@@ -92,7 +91,7 @@ class DeepLabHead(nn.Sequential):
         )
 
 # ============================================================================
-# 1. Metric & Loss Definition (FIXED for LibMTL API)
+# 1. Metric & Loss Definition (新增 Depth 支持)
 # ============================================================================
 class ConfMatrix(AbsMetric):
     def __init__(self, num_classes):
@@ -100,7 +99,6 @@ class ConfMatrix(AbsMetric):
         self.num_classes = num_classes
         self.mat = None
 
-    # 【关键修复】方法名必须是 update_fun，参数名必须是 pred, gt
     def update_fun(self, pred, gt):
         n = self.num_classes
         if self.mat is None:
@@ -115,17 +113,13 @@ class ConfMatrix(AbsMetric):
             inds = n * gt[k].to(torch.int64) + pred[k]
             self.mat += torch.bincount(inds, minlength=n**2).reshape(n, n)
 
-    # 【关键修复】方法名必须是 score_fun，且必须返回列表 list
     def score_fun(self):
         if self.mat is None:
             return [0.0, 0.0]
         h = self.mat.float()
-        # Pixel Accuracy
         acc_global = torch.diag(h).sum() / h.sum()
-        # mIoU
         iu = torch.diag(h) / (h.sum(1) + h.sum(0) - torch.diag(h))
         miou = torch.nanmean(iu)
-        # LibMTL 的 _record.py 要求返回 list，按 metrics 定义顺序
         return [miou.item(), acc_global.item()]
 
     def reinit(self):
@@ -139,8 +133,66 @@ class SegLoss(AbsLoss):
     def compute_loss(self, pred, gt):
         return self.loss_fn(pred, gt.long())
 
+# --- 新增 Depth Metric ---
+class DepthMetric(AbsMetric):
+    def __init__(self):
+        super(DepthMetric, self).__init__()
+        self.abs_err = 0.0
+        self.rel_err = 0.0
+        self.count = 0.0
+
+    def update_fun(self, pred, gt):
+        # pred: [B, 1, H, W], gt: [B, H, W] 或 [B, 1, H, W]
+        with torch.no_grad():
+            if gt.dim() == 3:
+                gt = gt.unsqueeze(1)
+            
+            # 对齐尺寸
+            if pred.shape[-2:] != gt.shape[-2:]:
+                gt = F.interpolate(gt, size=pred.shape[-2:], mode='nearest')
+                
+            pred = pred.squeeze(1)
+            gt = gt.squeeze(1)
+            
+            # 过滤无效值 (gt > 0)
+            valid = gt > 1e-6
+            if valid.sum() > 0:
+                diff = torch.abs(pred[valid] - gt[valid])
+                self.abs_err += diff.sum().item()
+                self.rel_err += (diff / gt[valid]).sum().item()
+                self.count += valid.sum().item()
+
+    def score_fun(self):
+        if self.count == 0:
+            return [0.0, 0.0]
+        return [self.abs_err / self.count, self.rel_err / self.count]
+
+    def reinit(self):
+        self.abs_err = 0.0
+        self.rel_err = 0.0
+        self.count = 0.0
+
+# --- 新增 Depth Loss ---
+class DepthLoss(AbsLoss):
+    def __init__(self):
+        super(DepthLoss, self).__init__()
+        self.loss_fn = nn.L1Loss() # 通常使用 L1 
+        
+    def compute_loss(self, pred, gt):
+        if gt.dim() == 3:
+            gt = gt.unsqueeze(1)
+        if pred.shape[-2:] != gt.shape[-2:]:
+             gt = F.interpolate(gt, size=pred.shape[-2:], mode='nearest')
+        
+        # 简单 mask 掉 0 值 (如果需要)
+        mask = gt > 1e-6
+        if mask.sum() > 0:
+            return self.loss_fn(pred[mask], gt[mask])
+        else:
+            return torch.tensor(0.0, device=pred.device, requires_grad=True)
+
 # ============================================================================
-# 2. Dataset Definitions
+# 2. Dataset Definitions (升级以支持 Depth)
 # ============================================================================
 GTA5_TO_7_CLASSES = {
     0: -1, 1: -1, 2: -1, 3: -1, 4: -1, 5: -1, 6: -1,
@@ -157,6 +209,7 @@ class GTA5Dataset(Dataset):
         self.img_size = img_size
         self.images = []
         self.targets = []
+        self.depths = [] # 新增深度列表
         
         search_dirs = ['', 'train', 'val', 'Train', 'Val', 'gta5']
         found_any = False
@@ -170,30 +223,47 @@ class GTA5Dataset(Dataset):
                 os.path.join(root_dir, subdir, 'labels'),
                 os.path.join(root_dir, subdir, 'Labels')
             ]
+            # 新增 depth 目录猜测
+            depth_dir_candidates = [
+                os.path.join(root_dir, subdir, 'depth'),
+                os.path.join(root_dir, subdir, 'Depth')
+            ]
             
             img_dir = next((d for d in img_dir_candidates if os.path.isdir(d)), None)
             lbl_dir = next((d for d in lbl_dir_candidates if os.path.isdir(d)), None)
+            depth_dir = next((d for d in depth_dir_candidates if os.path.isdir(d)), None)
             
             if img_dir and lbl_dir:
                 found_any = True
                 files = glob.glob(os.path.join(img_dir, "*.png"))
+                files.sort()
                 for img_path in files:
                     file_name = os.path.basename(img_path)
                     label_path = os.path.join(lbl_dir, file_name)
+                    
                     if os.path.exists(label_path):
                         self.images.append(img_path)
                         self.targets.append(label_path)
+                        
+                        # 尝试寻找对应的 .npy 深度文件 (假设同名)
+                        if depth_dir:
+                            depth_name = os.path.splitext(file_name)[0] + '.npy'
+                            d_path = os.path.join(depth_dir, depth_name)
+                            if os.path.exists(d_path):
+                                self.depths.append(d_path)
+                            else:
+                                self.depths.append(None)
+                        else:
+                            self.depths.append(None)
         
         if not found_any:
              print(f"[GTA5 Error] Could not find 'images'/'labels' folders in {root_dir}")
 
-        self.images.sort()
-        self.targets.sort()
         self.mapping = np.zeros(256, dtype=np.int64) - 1
         for k, v in GTA5_TO_7_CLASSES.items():
             if k >= 0: self.mapping[k] = v
             
-        print(f"[GTA5] Found {len(self.images)} samples. Resize Target: {self.img_size}")
+        print(f"[GTA5] Found {len(self.images)} images. (Depth files: {len([d for d in self.depths if d])})")
 
     def __len__(self):
         return len(self.images)
@@ -202,19 +272,38 @@ class GTA5Dataset(Dataset):
         img = Image.open(self.images[idx]).convert('RGB')
         label = Image.open(self.targets[idx])
         
-        img = img.resize((self.img_size[1], self.img_size[0]), Image.BILINEAR)
-        label = label.resize((self.img_size[1], self.img_size[0]), Image.NEAREST)
+        # Resize
+        target_size = (self.img_size[1], self.img_size[0]) # (W, H)
+        img = img.resize(target_size, Image.BILINEAR)
+        label = label.resize(target_size, Image.NEAREST)
         
+        # Depth Handling
+        depth_path = self.depths[idx]
+        if depth_path:
+            # 按照您的要求：读取 .npy -> float32 -> /255.0 -> Resize
+            depth_np = np.load(depth_path).astype(np.float32) / 255.0
+            depth_pil = Image.fromarray(depth_np, mode='F')
+            depth_pil = depth_pil.resize(target_size, Image.BILINEAR)
+            depth_tensor = transforms.ToTensor()(depth_pil).float() # [1, H, W]
+        else:
+            # 缺失则全0
+            depth_tensor = torch.zeros((1, target_size[1], target_size[0])).float()
+
+        # Augmentation
         if random.random() < 0.5:
             img = transforms.functional.hflip(img)
             label = transforms.functional.hflip(label)
+            depth_tensor = transforms.functional.hflip(depth_tensor)
             
         rgb_tensor = transforms.ToTensor()(img).float()
+        
         label_np = np.array(label, dtype=np.int64)
         label_np[label_np > 255] = 255
         label_mapped = self.mapping[label_np]
         seg_tensor = torch.from_numpy(label_mapped).long()
-        return {'rgb': rgb_tensor, 'segmentation': seg_tensor}
+        
+        # 返回增加 depth
+        return {'rgb': rgb_tensor, 'segmentation': seg_tensor, 'depth': depth_tensor}
 
 class CityscapesDataset(Dataset):
     def __init__(self, root_dir, split='train'):
@@ -242,14 +331,25 @@ class CityscapesDataset(Dataset):
 
     def __getitem__(self, i):
         index = self.index_list[i]
+        # 加载数据
         img_np = np.load(os.path.join(self.data_path, 'image', f'{index}.npy'))
         label_np = np.load(os.path.join(self.data_path, 'label', f'{index}.npy'))
+        depth_np = np.load(os.path.join(self.data_path, 'depth', f'{index}.npy')) # Cityscapes 也有 depth
+        
         if img_np.ndim == 3:
             image = torch.from_numpy(np.moveaxis(img_np, -1, 0)).float()
         else:
             image = torch.from_numpy(img_np).float().unsqueeze(0)
+            
         semantic = torch.from_numpy(label_np).long()
-        return {'rgb': image, 'segmentation': semantic}
+        
+        if depth_np.ndim == 3:
+            depth = torch.from_numpy(np.moveaxis(depth_np, -1, 0)).float()
+        else:
+            # 确保 depth 是 [1, H, W] 或 [H, W]
+            depth = torch.from_numpy(depth_np).float()
+            
+        return {'rgb': image, 'segmentation': semantic, 'depth': depth}
 
     def __len__(self):
         return self.num_samples
@@ -261,7 +361,11 @@ class LibMTLDatasetWrapper(Dataset):
         return len(self.dataset)
     def __getitem__(self, idx):
         data = self.dataset[idx]
-        return data['rgb'], {'segmentation': data['segmentation']}
+        # 【关键修正】这里必须透传 'depth'
+        targets = {'segmentation': data['segmentation']}
+        if 'depth' in data:
+            targets['depth'] = data['depth']
+        return data['rgb'], targets
 
 # ============================================================================
 # 3. Main Function
@@ -273,20 +377,30 @@ def main(params):
     print(f"Using device: {device}")
     set_random_seed(params.seed)
 
-    # 1. Define Tasks
+    # 1. Define Tasks (加入 Depth)
     task_dict = {
         'segmentation': {
             'metrics': ['mIoU', 'Acc'], 
-            'metrics_fn': ConfMatrix(num_classes=7), # 使用修正后的 Metric
-            'loss_fn': SegLoss(), # 使用修正后的 Loss
-            'weight': [1.0]
+            'metrics_fn': ConfMatrix(num_classes=7),
+            'loss_fn': SegLoss(),
+            'weight': [1.0, 1.0] # 对应 mIoU, Acc 权重，通常只用于打印
+        },
+        'depth': {
+            'metrics': ['AbsErr', 'RelErr'],
+            'metrics_fn': DepthMetric(),
+            'loss_fn': DepthLoss(),
+            'weight': [1.0, 1.0]
         }
     }
 
-    # 2. Define Network
+    # 2. Define Network (加入 Depth Decoder)
     def encoder_class():
         return resnet_dilated('resnet50')
-    decoders = nn.ModuleDict({'segmentation': DeepLabHead(2048, 7)})
+    
+    decoders = nn.ModuleDict({
+        'segmentation': DeepLabHead(2048, 7),
+        'depth': DeepLabHead(2048, 1) # 输出通道 1
+    })
 
     # 3. Data Auto-Align
     if params.cityscapes_path:
