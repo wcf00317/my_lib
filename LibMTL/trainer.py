@@ -298,9 +298,12 @@ class Trainer(nn.Module):
                     self.scheduler.step(val_improvement)
                 else:
                     self.scheduler.step()
-            if self.save_path is not None and self.meter.best_result['epoch'] == epoch:
-                torch.save(self.model.state_dict(), os.path.join(self.save_path, 'best.pt'))
-                print('Save Model {} to {}'.format(epoch, os.path.join(self.save_path, 'best.pt')))
+            if self.save_path is not None:
+                if self.meter.best_result['epoch'] == epoch:
+                    torch.save(self.model.state_dict(), os.path.join(self.save_path, 'best.pt'))
+                    print('Save Model {} to {}'.format(epoch, os.path.join(self.save_path, 'best.pt')))
+                torch.save(self.model.state_dict(), os.path.join(self.save_path, 'last.pt'))
+                print('Save Model {} to {}'.format(epoch, os.path.join(self.save_path, 'last.pt')))
         self.meter.display_best_result()
         if return_weight:
             return self.batch_weight
